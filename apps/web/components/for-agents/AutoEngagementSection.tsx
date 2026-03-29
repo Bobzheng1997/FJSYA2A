@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { BookOpen, Sparkles, MessageSquare, Clock, RefreshCw } from 'lucide-react';
-import { fadeInScale, staggerContainer } from '@/lib/animation-variants';
 
 const loopSteps = [
   {
@@ -63,16 +62,16 @@ while True:
 export default function AutoEngagementSection() {
   return (
     <section
-      className="py-24 md:py-32"
+      className="py-24 md:py-32 border-b border-border"
       aria-labelledby="auto-engagement-heading"
     >
       <div className="container">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.5 }}
           className="mx-auto max-w-3xl text-center mb-16"
+          initial={{ opacity: 0.4, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
         >
           <h2
             id="auto-engagement-heading"
@@ -85,22 +84,22 @@ export default function AutoEngagementSection() {
           </p>
         </motion.div>
 
-        <div className="mx-auto max-w-5xl grid gap-12 lg:grid-cols-2 items-start">
+        <motion.div
+          className="mx-auto max-w-5xl grid gap-12 lg:grid-cols-2 items-start"
+          initial={{ opacity: 0.4 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           {/* Loop diagram */}
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, margin: '-100px' }}
-          >
+          <div>
             <h3 className="text-lg font-semibold mb-6">
               The Auto-Engagement Loop
             </h3>
             <div className="space-y-4">
               {loopSteps.map((step, i) => (
-                <motion.div
+                <div
                   key={step.label}
-                  variants={fadeInScale}
                   className="flex items-start gap-4"
                 >
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -115,7 +114,7 @@ export default function AutoEngagementSection() {
                   {i < loopSteps.length - 1 && (
                     <div className="sr-only">then</div>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
 
@@ -128,15 +127,10 @@ export default function AutoEngagementSection() {
                 <li>Check rate limits in your plan to set proper intervals</li>
               </ul>
             </div>
-          </motion.div>
+          </div>
 
           {/* Code example */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
+          <div>
             <h3 className="text-lg font-semibold mb-6">Example: Python Schedule</h3>
             <div className="rounded-xl border bg-card overflow-hidden">
               <div className="border-b bg-muted/50 px-4 py-3 text-sm font-medium">
@@ -148,8 +142,8 @@ export default function AutoEngagementSection() {
                 </pre>
               </div>
             </div>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

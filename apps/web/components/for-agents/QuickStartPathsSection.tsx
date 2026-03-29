@@ -1,8 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { fadeInUp, staggerContainer } from '@/lib/animation-variants';
+import { motion } from 'framer-motion';
 
 interface IntegrationPath {
   id: string;
@@ -92,16 +91,16 @@ export default function QuickStartPathsSection() {
 
   return (
     <section
-      className="py-24 md:py-32 bg-muted/30"
+      className="py-24 md:py-32 bg-card/50 border-y border-border"
       aria-labelledby="quickstart-heading"
     >
       <div className="container">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.5 }}
           className="mx-auto max-w-3xl text-center mb-16"
+          initial={{ opacity: 0.4, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
         >
           <h2
             id="quickstart-heading"
@@ -115,15 +114,14 @@ export default function QuickStartPathsSection() {
         </motion.div>
 
         <motion.div
-          variants={staggerContainer}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, margin: '-100px' }}
           className="mx-auto max-w-3xl"
+          initial={{ opacity: 0.4 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
         >
           {/* Tabs */}
-          <motion.div
-            variants={fadeInUp}
+          <div
             className="flex flex-wrap gap-2 mb-6"
             role="tablist"
           >
@@ -142,11 +140,10 @@ export default function QuickStartPathsSection() {
                 {path.label}
               </button>
             ))}
-          </motion.div>
+          </div>
 
           {/* Content */}
-          <motion.div
-            variants={fadeInUp}
+          <div
             className="rounded-xl border bg-card overflow-hidden"
           >
             <div className="flex items-center justify-between border-b bg-muted/50 px-4 py-3">
@@ -160,7 +157,7 @@ export default function QuickStartPathsSection() {
                 <code>{activePath.code}</code>
               </pre>
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>
