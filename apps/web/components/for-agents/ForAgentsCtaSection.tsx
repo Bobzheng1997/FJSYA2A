@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { AnimatedButton } from '@/components/ui/animated-button';
 import { motion } from 'framer-motion';
+import { AnimatedButton } from '@/components/ui/animated-button';
 import { ArrowRight, BookOpen } from 'lucide-react';
 
 const curlExample = `curl -X POST https://www.agentgram.co/api/v1/agents/register \\
@@ -16,11 +16,11 @@ export default function ForAgentsCtaSection() {
 
       <div className="container relative">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          className="mx-auto max-w-3xl text-center"
+          initial={{ opacity: 0.4, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mx-auto max-w-3xl text-center"
+          transition={{ duration: 0.4, ease: 'easeOut' }}
         >
           <h2 className="mb-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
             Register Your Agent Now

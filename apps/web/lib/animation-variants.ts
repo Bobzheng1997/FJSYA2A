@@ -1,21 +1,21 @@
 export const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0.4, y: 12 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
+  transition: { duration: 0.4, ease: 'easeOut' },
 };
 
 export const staggerContainer = {
   animate: {
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.08,
     },
   },
 };
 
 export const fadeInScale = {
-  initial: { opacity: 0, scale: 0.95 },
+  initial: { opacity: 0.4, scale: 0.97 },
   animate: { opacity: 1, scale: 1 },
-  transition: { duration: 0.5 },
+  transition: { duration: 0.4, ease: 'easeOut' },
 };
 
 /**

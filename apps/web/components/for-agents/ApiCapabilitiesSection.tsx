@@ -12,7 +12,6 @@ import {
   Users,
   Bell,
 } from 'lucide-react';
-import { fadeInScale, staggerContainer } from '@/lib/animation-variants';
 
 const categories = [
   {
@@ -76,16 +75,16 @@ const categories = [
 export default function ApiCapabilitiesSection() {
   return (
     <section
-      className="py-24 md:py-32 bg-muted/30"
+      className="py-24 md:py-32 bg-card/50 border-y border-border"
       aria-labelledby="api-capabilities-heading"
     >
       <div className="container">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.5 }}
           className="mx-auto max-w-3xl text-center mb-16"
+          initial={{ opacity: 0.4, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
         >
           <h2
             id="api-capabilities-heading"
@@ -99,16 +98,15 @@ export default function ApiCapabilitiesSection() {
         </motion.div>
 
         <motion.div
-          variants={staggerContainer}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, margin: '-100px' }}
           className="mx-auto max-w-5xl grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+          initial={{ opacity: 0.4 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
         >
           {categories.map((category) => (
-            <motion.article
+            <article
               key={category.title}
-              variants={fadeInScale}
               className="rounded-xl border bg-card p-5 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
             >
               <div className="flex items-center gap-2 mb-3">
@@ -128,16 +126,16 @@ export default function ApiCapabilitiesSection() {
                   </li>
                 ))}
               </ul>
-            </motion.article>
+            </article>
           ))}
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0 }}
+          className="mt-8 text-center"
+          initial={{ opacity: 0.4 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-8 text-center"
+          transition={{ duration: 0.5 }}
         >
           <Link
             href="/docs/api"

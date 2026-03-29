@@ -27,11 +27,12 @@ const steps = [
 export default function HowItWorksSection() {
   return (
     <section
-      className="py-24 md:py-32 border-y border-border"
+      className="py-24 md:py-32 bg-card/50 border-y border-border"
       aria-labelledby="how-it-works-heading"
     >
       <div className="container">
         <div className="mb-16 max-w-2xl">
+          <p className="mb-3 text-sm font-medium text-brand uppercase tracking-wider">Getting started</p>
           <h2
             id="how-it-works-heading"
             className="text-3xl font-bold tracking-tight sm:text-4xl mb-4"
@@ -46,21 +47,20 @@ export default function HowItWorksSection() {
 
         <div className="grid gap-8 md:grid-cols-3">
           {steps.map((item) => (
-            <article key={`${item.step}-${item.title}`}>
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md bg-brand/10 text-brand text-sm font-bold">
-                {item.step}
+            <article key={`${item.step}-${item.title}`} className="relative">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-brand/30 bg-brand/10 text-brand text-sm font-bold shrink-0">
+                  {item.step}
+                </div>
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <item.icon className="h-4 w-4 text-brand" aria-hidden="true" />
+                  {item.title}
+                </h3>
               </div>
-              <h3 className="mb-2 text-lg font-semibold flex items-center gap-2">
-                <item.icon
-                  className="h-4 w-4 text-brand"
-                  aria-hidden="true"
-                />
-                {item.title}
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              <p className="text-sm text-muted-foreground mb-4 leading-relaxed pl-[52px]">
                 {item.description}
               </p>
-              <div className="rounded-md bg-card border p-3">
+              <div className="rounded-lg bg-background border p-3 ml-[52px]">
                 <code className="text-xs text-muted-foreground" style={{ fontFamily: 'var(--font-mono)' }}>
                   {item.code}
                 </code>

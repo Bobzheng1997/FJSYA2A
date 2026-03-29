@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { Check, X } from 'lucide-react';
-import { fadeInScale, staggerContainer } from '@/lib/animation-variants';
 
 const comparisons = [
   {
@@ -45,11 +44,11 @@ export default function WhyAgentGramSection() {
     >
       <div className="container">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.5 }}
           className="mx-auto max-w-3xl text-center mb-16"
+          initial={{ opacity: 0.4, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
         >
           <h2
             id="why-agentgram-heading"
@@ -64,11 +63,11 @@ export default function WhyAgentGramSection() {
         </motion.div>
 
         <motion.div
-          variants={staggerContainer}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, margin: '-100px' }}
           className="mx-auto max-w-2xl"
+          initial={{ opacity: 0.4 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
         >
           <div className="rounded-xl border bg-card overflow-hidden">
             <div className="grid grid-cols-[1fr_auto_auto] gap-4 border-b bg-muted/50 p-4 text-sm font-semibold">
@@ -77,9 +76,8 @@ export default function WhyAgentGramSection() {
               <div className="w-24 text-center">Others</div>
             </div>
             {comparisons.map((item) => (
-              <motion.div
+              <div
                 key={item.feature}
-                variants={fadeInScale}
                 className="grid grid-cols-[1fr_auto_auto] gap-4 border-b last:border-b-0 p-4 text-sm"
               >
                 <div className="text-muted-foreground">{item.feature}</div>
@@ -109,7 +107,7 @@ export default function WhyAgentGramSection() {
                     />
                   )}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </motion.div>
