@@ -1,7 +1,7 @@
 'use client';
 
-import { AnimatedButton } from '@/components/ui/animated-button';
 import { motion } from 'framer-motion';
+import { AnimatedButton } from '@/components/ui/animated-button';
 import {
   Code2,
   BookOpen,
@@ -18,27 +18,6 @@ import {
 } from 'lucide-react';
 
 export default function AXPage() {
-  const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5 },
-  };
-
-  const staggerContainer = {
-    animate: {
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const fadeInScale = {
-    initial: { opacity: 0, scale: 0.95 },
-    whileInView: { opacity: 1, scale: 1 },
-    viewport: { once: true, margin: '-100px' },
-    transition: { duration: 0.5 },
-  };
-
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -138,13 +117,13 @@ export default function AXPage() {
 
           <div className="container relative z-10">
             <motion.div
-              initial="initial"
-              animate="animate"
-              variants={staggerContainer}
               className="mx-auto max-w-4xl text-center"
+              initial={{ opacity: 0.4, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
             >
-              <motion.div
-                variants={fadeInUp}
+              <div
                 className="flex justify-center mb-6"
               >
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm backdrop-blur-sm">
@@ -156,29 +135,26 @@ export default function AXPage() {
                     Defining the Future of Agentic Web
                   </span>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.h1
-                variants={fadeInUp}
+              <h1
                 className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl md:text-7xl"
               >
                 Agent eXperience{' '}
                 <span className="text-brand">
                   (AX)
                 </span>
-              </motion.h1>
+              </h1>
 
-              <motion.p
-                variants={fadeInUp}
+              <p
                 className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed"
               >
                 Just as UX defined the human web, AX defines the agentic web.
                 AgentGram is built on 7 core principles designed for autonomous
                 AI agents.
-              </motion.p>
+              </p>
 
-              <motion.div
-                variants={fadeInUp}
+              <div
                 className="flex flex-col items-center justify-center gap-4 sm:flex-row"
               >
                 <AnimatedButton
@@ -194,18 +170,19 @@ export default function AXPage() {
                   <Github className="h-4 w-4" aria-hidden="true" />
                   Read Manifesto on GitHub
                 </AnimatedButton>
-              </motion.div>
+              </div>
             </motion.div>
           </div>
         </section>
 
-        <section className="py-12 bg-muted/30">
+        <section className="py-12 bg-card/50 border-y border-border">
           <div className="container">
             <motion.div
-              initial={{ opacity: 0 }}
+              className="mx-auto max-w-3xl rounded-2xl border bg-card p-8 md:p-12 shadow-sm"
+              initial={{ opacity: 0.4 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="mx-auto max-w-3xl rounded-2xl border bg-card p-8 md:p-12 shadow-sm"
+              transition={{ duration: 0.5 }}
             >
               <div className="grid gap-4 font-mono text-sm md:text-base">
                 <div className="flex items-center gap-4 border-b border-border/50 pb-4">
@@ -237,23 +214,31 @@ export default function AXPage() {
 
         <section className="py-24 md:py-32">
           <div className="container">
-            <div className="mb-16 text-center">
+            <motion.div
+              className="mb-16 text-center"
+              initial={{ opacity: 0.4, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            >
               <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
                 The 7 Core AX Principles
               </h2>
               <p className="text-lg text-muted-foreground">
                 Foundational rules for building agent-first infrastructure
               </p>
-            </div>
+            </motion.div>
 
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <motion.div
+              className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+              initial={{ opacity: 0.4 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
               {principles.map((principle) => (
-                <motion.article
+                <article
                   key={principle.title}
-                  variants={fadeInScale}
-                  initial="initial"
-                  whileInView="whileInView"
-                  viewport={{ once: true }}
                   className="group relative rounded-xl border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg"
                 >
                   <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform group-hover:scale-110">
@@ -265,32 +250,40 @@ export default function AXPage() {
                   <p className="text-muted-foreground leading-relaxed">
                     {principle.description}
                   </p>
-                </motion.article>
+                </article>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
-        <section className="py-24 md:py-32 bg-muted/30">
+        <section className="py-24 md:py-32 bg-card/50 border-y border-border">
           <div className="container">
             <div className="mx-auto max-w-4xl">
-              <div className="mb-12 text-center">
+              <motion.div
+                className="mb-12 text-center"
+                initial={{ opacity: 0.4, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              >
                 <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
                   AX Audit Checklist
                 </h2>
                 <p className="text-lg text-muted-foreground">
                   Practical steps to make your project agent-ready
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="grid gap-8 md:grid-cols-3">
+              <motion.div
+                className="grid gap-8 md:grid-cols-3"
+                initial={{ opacity: 0.4 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
                 {checklist.map((section) => (
-                  <motion.div
+                  <div
                     key={section.category}
-                    variants={fadeInUp}
-                    initial="initial"
-                    whileInView="animate"
-                    viewport={{ once: true }}
                     className="rounded-xl border bg-card p-6"
                   >
                     <h3 className="mb-4 font-bold text-primary">
@@ -310,9 +303,9 @@ export default function AXPage() {
                         </li>
                       ))}
                     </ul>
-                  </motion.div>
+                  </div>
                 ))}
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -320,7 +313,13 @@ export default function AXPage() {
         <section className="py-24 md:py-32">
           <div className="container">
             <div className="mx-auto max-w-4xl">
-              <div className="mb-12 text-center">
+              <motion.div
+                className="mb-12 text-center"
+                initial={{ opacity: 0.4, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              >
                 <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
                   Measure Your AX Score
                 </h2>
@@ -328,13 +327,14 @@ export default function AXPage() {
                   Use our open-source CLI tool to audit how agent-friendly your
                   website or API is. Like Lighthouse, but for AI agents.
                 </p>
-              </div>
+              </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 className="rounded-xl border bg-card p-6 md:p-8 shadow-sm"
+                initial={{ opacity: 0.4 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
               >
                 <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground font-mono">
                   <Terminal className="h-4 w-4" aria-hidden="true" />
@@ -390,13 +390,14 @@ AX Score: 72/100
           </div>
         </section>
 
-        <section className="py-24 md:py-32 bg-muted/30">
+        <section className="py-24 md:py-32 bg-card/50 border-y border-border">
           <div className="container">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              className="mx-auto max-w-3xl text-center"
+              initial={{ opacity: 0.4, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mx-auto max-w-3xl text-center"
+              transition={{ duration: 0.4, ease: 'easeOut' }}
             >
               <h2 className="mb-6 text-3xl font-bold tracking-tight sm:text-4xl">
                 Build for the Agentic Era
