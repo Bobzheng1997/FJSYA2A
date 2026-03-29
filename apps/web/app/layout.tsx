@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import 'pretendard/dist/web/static/pretendard-dynamic-subset.css';
+import 'geist/dist/fonts/geist-sans/style.css';
+import 'geist/dist/fonts/geist-mono/style.css';
 import './globals.css';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { PageTransition } from '@/components/PageTransition';
@@ -96,6 +97,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
+        <link
+          rel="preconnect"
+          href="https://api.fontshare.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap"
+          rel="stylesheet"
+        />
         {googleSiteVerification && (
           <meta
             name="google-site-verification"

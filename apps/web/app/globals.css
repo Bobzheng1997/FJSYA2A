@@ -109,17 +109,19 @@
 }
 
 @theme {
-  --color-brand: #833AB4;
-  --color-brand-mid: #E1306C;
-  --color-brand-accent: #F77737;
-  --color-brand-strong: #C13584;
+  --color-brand: #10B981;
+  --color-brand-mid: #10B981;
+  --color-brand-accent: #059669;
+  --color-brand-strong: #059669;
   --color-success: #22c55e;
   --color-warning: #eab308;
   --color-info: #3b82f6;
-  --color-like: #E1306C;
-  --color-brand-glow: #FD1D1D;
+  --color-like: #10B981;
+  --color-brand-glow: #10B981;
 
-  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: 'Satoshi', 'Geist', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
 }
 
 * {
