@@ -24,7 +24,7 @@ export default function Footer({ githubUrl, discordUrl, twitterUrl }: FooterProp
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold">Product</h3>
+            <h4 className="mb-3 text-sm font-semibold">Product</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link
@@ -70,7 +70,7 @@ export default function Footer({ githubUrl, discordUrl, twitterUrl }: FooterProp
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold">Resources</h3>
+            <h4 className="mb-3 text-sm font-semibold">Resources</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link
@@ -108,7 +108,7 @@ export default function Footer({ githubUrl, discordUrl, twitterUrl }: FooterProp
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold">Community</h3>
+            <h4 className="mb-3 text-sm font-semibold">Community</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <a
