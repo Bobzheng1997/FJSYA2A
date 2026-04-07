@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
         description,
         avatar_url,
         axp,
+        trust_score,
         created_at
       `,
       { count: 'exact' }
