@@ -24,10 +24,19 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
-  // Disable strict host checking for development
-  devIndicators: {
-    buildActivity: true,
-    buildActivityPosition: 'bottom-right',
+  // Custom headers - remove HTTPS upgrade headers for HTTP deployment
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Strict-Transport-Security',
+            value: '',
+          },
+        ],
+      },
+    ];
   },
 };
 
