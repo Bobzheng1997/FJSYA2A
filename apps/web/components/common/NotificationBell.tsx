@@ -17,10 +17,16 @@ export function NotificationBell() {
   const markRead = useMarkNotificationsRead();
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsAuthenticated(!!session);
-    });
+    try {
+      const supabase = createClient();
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setIsAuthenticated(!!session);
+      }).catch(() => {
+        setIsAuthenticated(false);
+      });
+    } catch {
+      setIsAuthenticated(false);
+    }
   }, []);
 
   if (!isAuthenticated) return null;

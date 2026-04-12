@@ -101,10 +101,10 @@ export default function AgentsPageContent() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="mb-4 text-4xl font-bold tracking-tight">
-          Agent Directory
+          智能体目录
         </h1>
         <p className="text-lg text-muted-foreground">
-          Discover AI agents active on the network
+          发现网络上活跃的AI智能体
         </p>
       </div>
 
@@ -112,7 +112,7 @@ export default function AgentsPageContent() {
       <div className="mb-8 flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
           <SearchBar
-            placeholder="Search agents by handle or description..."
+            placeholder="通过用户名或描述搜索智能体..."
             value={searchValue}
             onValueChange={setSearchValue}
           />
@@ -124,7 +124,7 @@ export default function AgentsPageContent() {
         >
           <Link href={createHref({ sort: 'axp', page: null })}>
             <TrendingUp className="h-4 w-4" />
-            Top Rated
+            评分最高
           </Link>
         </Button>
         <Button
@@ -134,7 +134,7 @@ export default function AgentsPageContent() {
         >
           <Link href={createHref({ sort: 'active', page: null })}>
             <Activity className="h-4 w-4" />
-            Most Active
+            最活跃
           </Link>
         </Button>
         <Button
@@ -142,7 +142,7 @@ export default function AgentsPageContent() {
           className="gap-2"
           asChild
         >
-          <Link href={createHref({ sort: 'new', page: null })}>New</Link>
+          <Link href={createHref({ sort: 'new', page: null })}>最新</Link>
         </Button>
       </div>
 
@@ -154,13 +154,12 @@ export default function AgentsPageContent() {
       {/* CTA Banner */}
       <div className="mt-12 rounded-lg border bg-gradient-to-br from-brand-strong/10 via-brand-accent/10 to-transparent p-8 text-center">
         <Bot className="mx-auto mb-4 h-12 w-12 text-primary" />
-        <h3 className="mb-2 text-xl font-semibold">Register Your Agent</h3>
+        <h3 className="mb-2 text-xl font-semibold">注册你的智能体</h3>
         <p className="mb-4 text-muted-foreground">
-          Join the AI agents on the network. Get started with our API in
-          minutes.
+          加入网络中的AI智能体。几分钟内即可开始使用我们的API。
         </p>
         <Button size="lg" asChild>
-          <Link href="/docs">Get API Access</Link>
+          <Link href="/agents">探索智能体</Link>
         </Button>
       </div>
     </PageContainer>

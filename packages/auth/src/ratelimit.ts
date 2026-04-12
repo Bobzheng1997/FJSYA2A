@@ -304,16 +304,20 @@ export function withRateLimit<T extends unknown[]>(
       console.error(
         `[agentgram:ratelimit] Rejecting ${typeName} request: Redis unavailable (fail-closed)`
       );
-      return NextResponse.json(
-        {
+      return new Response(JSON.stringify({
           success: false,
           error: {
             code: 'RATE_LIMIT_EXCEEDED',
             message:
               'Service temporarily unavailable. Please try again later.',
           },
-        } satisfies ApiResponse,
-        { status: 503, headers: { 'Retry-After': '60' } }
+        } satisfies ApiResponse), {
+          status: 503,
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Retry-After': '60',
+          },
+        }
       );
     }
 
@@ -327,17 +331,16 @@ export function withRateLimit<T extends unknown[]>(
       );
       if (!result.success) {
         const retryAfterSeconds = getRetryAfterSeconds(resetSeconds);
-        return NextResponse.json(
-          {
+        return new Response(JSON.stringify({
             success: false,
             error: {
               code: 'RATE_LIMIT_EXCEEDED',
               message: 'Rate limit exceeded. Please try again later.',
             },
-          } satisfies ApiResponse,
-          {
+          } satisfies ApiResponse), {
             status: 429,
             headers: {
+              'Content-Type': 'application/json; charset=utf-8',
               ...rateLimitHeaders,
               'Retry-After': retryAfterSeconds.toString(),
             },
@@ -356,17 +359,16 @@ export function withRateLimit<T extends unknown[]>(
 
         if (!prefixResult.success) {
           const retryAfterSeconds = getRetryAfterSeconds(prefixResetSeconds);
-          return NextResponse.json(
-            {
+          return new Response(JSON.stringify({
               success: false,
               error: {
                 code: 'RATE_LIMIT_EXCEEDED',
                 message: 'Rate limit exceeded. Please try again later.',
               },
-            } satisfies ApiResponse,
-            {
+            } satisfies ApiResponse), {
               status: 429,
               headers: {
+                'Content-Type': 'application/json; charset=utf-8',
                 ...prefixHeaders,
                 'Retry-After': retryAfterSeconds.toString(),
               },
@@ -393,17 +395,16 @@ export function withRateLimit<T extends unknown[]>(
 
     if (limitData.count > maxRequests) {
       const retryAfterSeconds = getRetryAfterSeconds(resetSeconds);
-      return NextResponse.json(
-        {
+      return new Response(JSON.stringify({
           success: false,
           error: {
             code: 'RATE_LIMIT_EXCEEDED',
             message: 'Rate limit exceeded. Please try again later.',
           },
-        } satisfies ApiResponse,
-        {
+        } satisfies ApiResponse), {
           status: 429,
           headers: {
+            'Content-Type': 'application/json; charset=utf-8',
             ...rateLimitHeaders,
             'Retry-After': retryAfterSeconds.toString(),
           },
@@ -424,17 +425,16 @@ export function withRateLimit<T extends unknown[]>(
 
       if (prefixLimit.count > maxRequests) {
         const retryAfterSeconds = getRetryAfterSeconds(prefixResetSeconds);
-        return NextResponse.json(
-          {
+        return new Response(JSON.stringify({
             success: false,
             error: {
               code: 'RATE_LIMIT_EXCEEDED',
               message: 'Rate limit exceeded. Please try again later.',
             },
-          } satisfies ApiResponse,
-          {
+          } satisfies ApiResponse), {
             status: 429,
             headers: {
+              'Content-Type': 'application/json; charset=utf-8',
               ...prefixHeaders,
               'Retry-After': retryAfterSeconds.toString(),
             },

@@ -9,31 +9,35 @@ export function withAuth<T extends unknown[]>(
     const apiKey = extractApiKey(req.headers.get('authorization'));
 
     if (!apiKey) {
-      return Response.json(
-        {
-          success: false,
-          error: {
-            code: 'UNAUTHORIZED',
-            message: 'Missing or invalid authorization header',
-          },
-        } satisfies ApiResponse,
-        { status: 401 }
-      );
+      return new Response(JSON.stringify({
+        success: false,
+        error: {
+          code: 'UNAUTHORIZED',
+          message: 'Missing or invalid authorization header',
+        },
+      } satisfies ApiResponse), {
+        status: 401,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      });
     }
 
     const agent = await verifyApiKey(apiKey);
 
     if (!agent) {
-      return Response.json(
-        {
-          success: false,
-          error: {
-            code: 'INVALID_API_KEY',
-            message: 'Invalid or expired API key',
-          },
-        } satisfies ApiResponse,
-        { status: 401 }
-      );
+      return new Response(JSON.stringify({
+        success: false,
+        error: {
+          code: 'INVALID_API_KEY',
+          message: 'Invalid or expired API key',
+        },
+      } satisfies ApiResponse), {
+        status: 401,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      });
     }
 
     const headers = new Headers(req.headers);

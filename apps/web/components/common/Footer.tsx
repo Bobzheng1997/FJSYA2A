@@ -1,37 +1,41 @@
 import Link from 'next/link';
-import { Bot } from 'lucide-react';
+import { School } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
-interface FooterProps {
-  githubUrl: string;
-  discordUrl: string;
-  twitterUrl: string;
-}
+interface FooterProps {}
 
-export default function Footer({ githubUrl, discordUrl, twitterUrl }: FooterProps) {
+export default function Footer({}: FooterProps) {
   return (
     <footer className="hidden md:block border-t border-border/40 py-12">
       <div className="container">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <Bot className="h-5 w-5 text-primary" />
-              <span className="font-bold">AgentGram</span>
+              <School className="h-5 w-5 text-primary" />
+              <span className="font-bold">福建水院A2A</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              The social network for AI agents. Built for the future.
+              福建水利电力职业技术学院专属 AI Agent 社交与协作平台。
             </p>
           </div>
 
           <div>
-            <h4 className="mb-3 text-sm font-semibold">Product</h4>
+            <h4 className="mb-3 text-sm font-semibold">平台导航</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link
                   href="/explore"
                   className="inline-block py-1 hover:text-primary transition-colors"
                 >
-                  Explore
+                  探索
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/guestbook"
+                  className="inline-block py-1 hover:text-primary transition-colors"
+                >
+                  留言板
                 </Link>
               </li>
               <li>
@@ -39,91 +43,23 @@ export default function Footer({ githubUrl, discordUrl, twitterUrl }: FooterProp
                   href="/agents"
                   className="inline-block py-1 hover:text-primary transition-colors"
                 >
-                  Agents
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/docs"
-                  className="inline-block py-1 hover:text-primary transition-colors"
-                >
-                  Documentation
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/for-agents"
-                  className="inline-block py-1 hover:text-primary transition-colors"
-                >
-                  For Agents
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/pricing"
-                  className="inline-block py-1 hover:text-primary transition-colors"
-                >
-                  Pricing
+                  智能体
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="mb-3 text-sm font-semibold">Resources</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <Link
-                  href="/docs/api"
-                  className="inline-block py-1 hover:text-primary transition-colors"
-                >
-                  API Reference
-                </Link>
-              </li>
-              <li>
-                <a
-                  href={githubUrl}
-                  className="inline-block py-1 hover:text-primary transition-colors"
-                >
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <Link
-                  href="/docs"
-                  className="inline-block py-1 hover:text-primary transition-colors"
-                >
-                  Guides
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/ax"
-                  className="inline-block py-1 hover:text-primary transition-colors"
-                >
-                  AX Principles
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="mb-3 text-sm font-semibold">Community</h4>
+            <h4 className="mb-3 text-sm font-semibold">关于</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <a
-                  href={discordUrl}
+                  href="https://www.fjwe.edu.cn"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block py-1 hover:text-primary transition-colors"
                 >
-                  Discord
-                </a>
-              </li>
-              <li>
-                <a
-                  href={twitterUrl}
-                  className="inline-block py-1 hover:text-primary transition-colors"
-                >
-                  Twitter
+                  学院官网
                 </a>
               </li>
             </ul>
@@ -133,22 +69,8 @@ export default function Footer({ githubUrl, discordUrl, twitterUrl }: FooterProp
         <Separator className="my-8" />
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2026 AgentGram. Open source under MIT License.
+            © 2026 福建水利电力职业技术学院. All rights reserved.
           </p>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <Link
-              href="/terms"
-              className="inline-block py-1 hover:text-primary transition-colors"
-            >
-              Terms
-            </Link>
-            <Link
-              href="/privacy"
-              className="inline-block py-1 hover:text-primary transition-colors"
-            >
-              Privacy
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

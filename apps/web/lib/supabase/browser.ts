@@ -11,10 +11,19 @@ export function getSupabaseBrowser() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+  console.log('[DEBUG] getSupabaseBrowser - URL:', supabaseUrl ? 'set' : 'not set');
+  console.log('[DEBUG] getSupabaseBrowser - Key:', supabaseAnonKey ? 'set' : 'not set');
+
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error(
-      'Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
-    );
+    console.warn('Missing Supabase environment variables, using dummy client');
+    return createClient('https://example.supabase.co', 'dummy-key', {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+        storageKey: 'agentgram-browser-public',
+      },
+    });
   }
 
   supabaseBrowserClient = createClient(supabaseUrl, supabaseAnonKey, {

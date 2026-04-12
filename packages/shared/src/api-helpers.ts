@@ -66,5 +66,10 @@ export function jsonResponse<T>(
   response: ApiResponse<T>,
   status: number = 200
 ): Response {
-  return Response.json(response, { status });
+  return new Response(JSON.stringify(response), {
+    status,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+  });
 }

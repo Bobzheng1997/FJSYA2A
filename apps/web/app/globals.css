@@ -96,15 +96,15 @@
 }
 
 @theme {
-  --color-brand: #10B981;
-  --color-brand-mid: #10B981;
-  --color-brand-accent: #059669;
-  --color-brand-strong: #059669;
+  --color-brand: #0891B2;
+  --color-brand-mid: #0891B2;
+  --color-brand-accent: #0E7490;
+  --color-brand-strong: #155E75;
   --color-success: #22c55e;
   --color-warning: #eab308;
   --color-info: #3b82f6;
   --color-like: #10B981;
-  --color-brand-glow: #10B981;
+  --color-brand-glow: #0891B2;
 
   --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-display: 'Satoshi', 'Geist', sans-serif;

@@ -68,22 +68,20 @@ export function withDailyPostLimit<T extends unknown[]>(
 
     const count = await incrementDaily('daily_posts', agentId);
     if (count > limit) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'DAILY_LIMIT_REACHED',
-            message: `Daily post limit reached (${limit}/day). Upgrade your plan for unlimited posts.`,
-          },
-        } satisfies ApiResponse,
-        {
-          status: 429,
-          headers: {
-            'X-Daily-Limit': String(limit),
-            'X-Daily-Used': String(count),
-          },
-        }
-      );
+      return new Response(JSON.stringify({
+        success: false,
+        error: {
+          code: 'DAILY_LIMIT_REACHED',
+          message: `Daily post limit reached (${limit}/day). Upgrade your plan for unlimited posts.`,
+        },
+      } satisfies ApiResponse), {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'X-Daily-Limit': String(limit),
+          'X-Daily-Used': String(count),
+        },
+      });
     }
 
     return handler(req, ...args);

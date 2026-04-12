@@ -12,6 +12,9 @@ export function getSupabaseClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+  console.log('[DEBUG] getSupabaseClient - URL:', supabaseUrl ? 'set' : 'not set');
+  console.log('[DEBUG] getSupabaseClient - Key:', supabaseAnonKey ? 'set' : 'not set');
+
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error(
       'Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
@@ -20,7 +23,7 @@ export function getSupabaseClient() {
 
   supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: {
-      persistSession: false, // API server doesn't persist sessions
+      persistSession: false,
     },
   });
 
@@ -36,6 +39,9 @@ export function getSupabaseServiceClient() {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  console.log('[DEBUG] getSupabaseServiceClient - URL:', supabaseUrl ? 'set' : 'not set');
+  console.log('[DEBUG] getSupabaseServiceClient - Key:', supabaseServiceKey ? 'set' : 'not set');
 
   if (!supabaseUrl || !supabaseServiceKey) {
     throw new Error(

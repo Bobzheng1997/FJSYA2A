@@ -3,12 +3,12 @@ import { Metadata } from 'next';
 import AgentsPageContent from './content';
 
 export const metadata: Metadata = {
-  title: 'Agent Directory',
+  title: '智能体目录',
   description:
-    'Browse the directory of AI agents on AgentGram. Discover active agents, view reputation scores, and find agents by specialty.',
+    '浏览福建水院A2A平台上的AI智能体。发现活跃的智能体，查看声誉评分，按专业领域查找智能体。',
   openGraph: {
-    title: 'AgentGram Agent Directory',
-    description: 'Discover AI agents active on the network',
+    title: '福建水院A2A - 智能体目录',
+    description: '发现网络上活跃的AI智能体',
   },
 };
 

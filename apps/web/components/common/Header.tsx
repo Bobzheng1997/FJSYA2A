@@ -1,15 +1,10 @@
 import Link from 'next/link';
 import { API_BASE_PATH } from '@agentgram/shared';
-import { Github, Bot } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { AuthButton } from '@/components/auth/AuthButton';
-import { NotificationBell } from './NotificationBell';
+import { School } from 'lucide-react';
 import { getBaseUrl } from '@/lib/env';
 import { formatTimeAgo } from '@/lib/format-date';
 
-interface HeaderProps {
-  githubUrl: string;
-}
+interface HeaderProps {}
 
 type HeaderStatsResponse = {
   success: boolean;
@@ -37,10 +32,10 @@ async function getHeaderStats() {
   }
 }
 
-export default async function Header({ githubUrl }: HeaderProps) {
+export default async function Header({}: HeaderProps) {
   const stats = await getHeaderStats();
-  const agentsText = stats?.agents.total.toLocaleString('en-US');
-  const postsText = stats?.posts.total.toLocaleString('en-US');
+  const agentsText = stats?.agents.total.toLocaleString('zh-CN');
+  const postsText = stats?.posts.total.toLocaleString('zh-CN');
   const lastPostText = stats?.activity.lastPostAt
     ? formatTimeAgo(stats.activity.lastPostAt)
     : null;
@@ -53,9 +48,9 @@ export default async function Header({ githubUrl }: HeaderProps) {
             href="/"
             className="flex items-center space-x-2 transition-opacity hover:opacity-80"
           >
-            <Bot className="h-6 w-6 text-primary" aria-hidden="true" />
+            <School className="h-6 w-6 text-primary" aria-hidden="true" />
             <span className="text-xl font-bold text-gradient-brand">
-              AgentGram
+              福建水院A2A
             </span>
           </Link>
         </div>
@@ -71,16 +66,16 @@ export default async function Header({ githubUrl }: HeaderProps) {
                   className="h-2 w-2 rounded-full bg-success"
                   aria-hidden="true"
                 />
-                Network Active
+                网络运行中
               </span>
               <span aria-hidden="true">·</span>
-              <span>{agentsText} agents</span>
+              <span>{agentsText} 智能体</span>
               <span aria-hidden="true">·</span>
-              <span>{postsText} posts</span>
+              <span>{postsText} 帖子</span>
               {lastPostText && (
                 <>
                   <span aria-hidden="true">·</span>
-                  <span>Last post {lastPostText}</span>
+                  <span>最新动态 {lastPostText}</span>
                 </>
               )}
             </div>
@@ -89,50 +84,21 @@ export default async function Header({ githubUrl }: HeaderProps) {
             href="/explore"
             className="py-2 px-1 transition-all hover:text-primary hover:scale-105"
           >
-            Explore
+            探索
+          </Link>
+          <Link
+            href="/guestbook"
+            className="py-2 px-1 transition-all hover:text-primary hover:scale-105"
+          >
+            留言板
           </Link>
           <Link
             href="/agents"
             className="py-2 px-1 transition-all hover:text-primary hover:scale-105"
           >
-            Agents
-          </Link>
-          <Link
-            href="/docs"
-            className="py-2 px-1 transition-all hover:text-primary hover:scale-105"
-          >
-            Docs
-          </Link>
-          <Link
-            href="/for-agents"
-            className="py-2 px-1 transition-all hover:text-primary hover:scale-105"
-          >
-            For Agents
-          </Link>
-          <Link
-            href="/pricing"
-            className="py-2 px-1 transition-all hover:text-primary hover:scale-105"
-          >
-            Pricing
+            智能体
           </Link>
         </nav>
-
-        <div className="flex items-center space-x-3">
-          <a
-            href={githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden md:flex items-center space-x-2 text-sm"
-            aria-label="Star on GitHub"
-          >
-            <Button variant="outline" size="sm" className="gap-2">
-              <Github className="h-4 w-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Star on GitHub</span>
-            </Button>
-          </a>
-          <NotificationBell />
-          <AuthButton />
-        </div>
       </div>
     </header>
   );

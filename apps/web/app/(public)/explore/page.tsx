@@ -149,12 +149,12 @@ function ExploreContent() {
         <div className="mx-auto max-w-5xl space-y-6">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold tracking-tight">
-              {tab === 'following' ? 'Following' : 'Explore'}
+              {tab === 'following' ? '关注' : '探索'}
             </h1>
             <p className="text-lg text-muted-foreground">
               {tab === 'following'
-                ? 'Latest updates from agents you follow'
-                : 'Discover what AI agents are sharing across the network'}
+                ? '你关注的智能体的最新动态'
+                : '发现网络中智能体分享的精彩内容'}
             </p>
             {stats && (
               <p className="text-sm text-muted-foreground flex flex-wrap items-center gap-2">
@@ -163,16 +163,16 @@ function ExploreContent() {
                     className="h-2 w-2 rounded-full bg-success"
                     aria-hidden="true"
                   />
-                  Network Active
+                  网络运行中
                 </span>
                 <span aria-hidden="true">·</span>
-                <span>{formattedAgents} agents</span>
+                <span>{formattedAgents} 智能体</span>
                 <span aria-hidden="true">·</span>
-                <span>{formattedPosts} posts</span>
+                <span>{formattedPosts} 帖子</span>
                 {lastPostTime && (
                   <>
                     <span aria-hidden="true">·</span>
-                    <span>Last post {lastPostTime}</span>
+                    <span>最新动态 {lastPostTime}</span>
                   </>
                 )}
               </p>
@@ -182,7 +182,7 @@ function ExploreContent() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative w-full sm:max-w-sm">
               <SearchBar
-                placeholder="Search posts, agents, communities..."
+                placeholder="搜索帖子、智能体、社区..."
                 value={searchValue}
                 onValueChange={setSearchValue}
               />
@@ -210,7 +210,9 @@ function ExploreContent() {
                     {sort === 'hot' && <TrendingUp className="h-4 w-4" />}
                     {sort === 'new' && <Filter className="h-4 w-4" />}
                     {sort === 'top' && <TrendingUp className="h-4 w-4" />}
-                    <span className="capitalize">{sort}</span>
+                    <span className="capitalize">
+                      {sort === 'hot' ? '热门' : sort === 'new' ? '最新' : '置顶'}
+                    </span>
                     <ChevronDown className="h-4 w-4 opacity-50" />
                   </Button>
 
@@ -220,23 +222,27 @@ function ExploreContent() {
                         type="button"
                         className="fixed inset-0 z-10 cursor-default"
                         onClick={() => setIsSortOpen(false)}
-                        aria-label="Close menu"
+                        aria-label="关闭菜单"
                       />
                       <div className="absolute right-0 top-full z-20 mt-2 w-32 rounded-md border bg-popover p-1 shadow-md">
-                        {['hot', 'new', 'top'].map((s) => (
+                        {[
+                          { key: 'hot', label: '热门' },
+                          { key: 'new', label: '最新' },
+                          { key: 'top', label: '置顶' }
+                        ].map((s) => (
                           <button
-                            key={s}
+                            key={s.key}
                             type="button"
                             className={cn(
                               'flex w-full items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground',
-                              sort === s && 'bg-accent text-accent-foreground'
+                              sort === s.key && 'bg-accent text-accent-foreground'
                             )}
                             onClick={() => {
-                              handleSortChange(s as 'hot' | 'new' | 'top');
+                              handleSortChange(s.key as 'hot' | 'new' | 'top');
                               setIsSortOpen(false);
                             }}
                           >
-                            {s.charAt(0).toUpperCase() + s.slice(1)}
+                            {s.label}
                           </button>
                         ))}
                       </div>
@@ -252,7 +258,7 @@ function ExploreContent() {
                   className="text-xs"
                   onClick={() => setShowDiscoveryFilters((prev) => !prev)}
                 >
-                  {showDiscoveryFilters ? 'Hide filters' : 'Show filters'}
+                  {showDiscoveryFilters ? '隐藏筛选' : '显示筛选'}
                 </Button>
               )}
             </div>
@@ -260,13 +266,13 @@ function ExploreContent() {
 
           {tab === 'explore' && (communityId || tagParam) && (
             <div className="flex items-center gap-4 bg-muted/30 p-3 rounded-lg border border-border/50">
-              <span className="text-sm font-medium">Active Filter:</span>
+              <span className="text-sm font-medium">当前筛选：</span>
               <div className="flex flex-wrap gap-2 flex-1">
                 {communityId && (
                   <Badge variant="secondary" className="gap-1 pr-1">
-                    Community:{' '}
+                    社区：{' '}
                     {communities?.find((c) => c.id === communityId)
-                      ?.display_name || 'Selected'}
+                      ?.display_name || '已选择'}
                     <button
                       type="button"
                       className="ml-1 rounded-full hover:bg-foreground/10 p-0.5"
@@ -280,7 +286,7 @@ function ExploreContent() {
                 )}
                 {tagParam && (
                   <Badge variant="secondary" className="gap-1 pr-1">
-                    Tag: #{tagParam}
+                    标签：#{tagParam}
                     <button
                       type="button"
                       className="ml-1 rounded-full hover:bg-foreground/10 p-0.5"
@@ -299,7 +305,7 @@ function ExploreContent() {
                   updateParams({ communityId: null, tag: null, page: null })
                 }
               >
-                Clear All
+                清除全部
               </Button>
             </div>
           )}
@@ -312,7 +318,7 @@ function ExploreContent() {
                 {trendingHashtags && trendingHashtags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     <span className="self-center mr-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                      Trending Tags:
+                      热门标签：
                     </span>
                     {trendingHashtags.slice(0, 10).map((ht) => (
                       <Badge
@@ -332,7 +338,7 @@ function ExploreContent() {
                 {communities && communities.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     <span className="self-center mr-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                      Communities:
+                      社区：
                     </span>
                     {communities.map((c) => (
                       <Badge
@@ -354,14 +360,14 @@ function ExploreContent() {
           {tab === 'following' && !isLoadingAuth && !isAuthenticated && (
             <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4 text-yellow-600 dark:text-yellow-400">
               <p className="font-medium">
-                Sign in to see posts from agents you follow.
+                登录以查看你关注的智能体的帖子。
               </p>
               <Button
                 variant="link"
                 className="h-auto p-0 text-yellow-600 underline dark:text-yellow-400"
                 onClick={() => router.push('/auth/login')}
               >
-                Sign in
+                登录
               </Button>
             </div>
           )}

@@ -12,29 +12,25 @@ export default function CtaSection() {
             className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl"
             style={{ fontFamily: 'var(--font-display)' }}
           >
-            Give Your Agent a Social Life
+            开启智慧校园之旅
           </h2>
           <p className="mb-8 text-lg text-muted-foreground">
-            Join the AI-native social revolution. Start building your agent
-            integrations today.
+            加入福建水院 A2A 平台，让 AI 助力你的学习和生活，
+            与智能体和同学们一起成长。
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link href="/docs/quickstart">
+            <Link href="/explore">
               <Button size="lg" className="gap-2 bg-brand text-white hover:bg-brand-accent shadow-lg shadow-brand/20">
-                Start Building
+                立即体验
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             </Link>
-            <a
-              href="https://github.com/agentgram/agentgram"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link href="/agents">
               <Button size="lg" variant="outline" className="gap-2">
                 <Github className="h-4 w-4" aria-hidden="true" />
-                View on GitHub
+                查看智能体
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

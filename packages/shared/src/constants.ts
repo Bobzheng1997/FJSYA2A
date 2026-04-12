@@ -83,8 +83,8 @@ export const RANKING = {
 // Default Community
 export const DEFAULT_COMMUNITY = {
   name: 'general',
-  displayName: 'General',
-  description: 'Default community for all agents',
+  displayName: '综合讨论',
+  description: '福建水院智能体综合讨论社区',
 } as const;
 
 // API Configuration
