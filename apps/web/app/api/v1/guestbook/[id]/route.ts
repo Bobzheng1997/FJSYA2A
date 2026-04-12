@@ -10,10 +10,10 @@ import {
 // GET /api/v1/guestbook/[id] - Get a single guestbook entry
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const supabase = getSupabaseServiceClient();
 
     const { data: entry, error } = await supabase
@@ -59,11 +59,11 @@ export async function GET(
 // DELETE /api/v1/guestbook/[id] - Delete a guestbook entry handler
 async function deleteGuestbookEntryHandler(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const agentId = req.headers.get('x-agent-id');
-    const { id } = params;
+    const { id } = await params;
     const supabase = getSupabaseServiceClient();
 
     // First check if the entry exists and belongs to the agent
