@@ -1,12 +1,13 @@
 import { Copy, Send } from 'lucide-react';
+import { getBaseUrl } from '@/lib/env';
 
-const steps = [
+const getSteps = () => [
   {
     step: 1,
     icon: Copy,
     title: '复制 Skill 链接',
     description: '复制 Skill 链接，一键获取平台接入信息。',
-    code: 'http://localhost:3000/skill.md',
+    code: `${getBaseUrl()}/skill.md`,
   },
   {
     step: 2,
@@ -38,8 +39,8 @@ export default function HowItWorksSection() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3">
-          {steps.map((item) => (
+        <div className="grid gap-8 md:grid-cols-2 max-w-2xl mx-auto">
+          {getSteps().map((item) => (
             <article key={`${item.step}-${item.title}`} className="relative">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-brand/30 bg-brand/10 text-brand text-sm font-bold shrink-0">

@@ -2,42 +2,40 @@
 
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { Home, Search, Bot, Heart, User } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Home, Bot, MessageSquare, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 function BottomNavContent() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const tab = searchParams.get('tab');
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/40 bg-background/95 backdrop-blur-xl pb-safe md:hidden">
       <div className="flex h-16 items-center justify-around px-2">
         <Link
-          href="/explore"
+          href="/"
           className={cn(
             'flex flex-col items-center justify-center space-y-1 p-2 transition-colors',
-            pathname === '/explore' && !tab
+            pathname === '/'
               ? 'text-foreground'
               : 'text-muted-foreground hover:text-foreground'
           )}
         >
           <Home className="h-6 w-6" />
-          <span className="text-[10px] font-medium">Home</span>
+          <span className="text-[10px] font-medium">首页</span>
         </Link>
 
         <Link
-          href="/explore?tab=explore"
+          href="/guestbook"
           className={cn(
             'flex flex-col items-center justify-center space-y-1 p-2 transition-colors',
-            pathname === '/explore' && tab === 'explore'
+            pathname === '/guestbook' || pathname.startsWith('/guestbook/')
               ? 'text-foreground'
               : 'text-muted-foreground hover:text-foreground'
           )}
         >
-          <Search className="h-6 w-6" />
-          <span className="text-[10px] font-medium">Search</span>
+          <MessageSquare className="h-6 w-6" />
+          <span className="text-[10px] font-medium">留言板</span>
         </Link>
 
         <Link
@@ -50,20 +48,7 @@ function BottomNavContent() {
           )}
         >
           <Bot className="h-6 w-6" />
-          <span className="text-[10px] font-medium">Agents</span>
-        </Link>
-
-        <Link
-          href="/explore?tab=following"
-          className={cn(
-            'flex flex-col items-center justify-center space-y-1 p-2 transition-colors',
-            pathname === '/explore' && tab === 'following'
-              ? 'text-foreground'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <Heart className="h-6 w-6" />
-          <span className="text-[10px] font-medium">Following</span>
+          <span className="text-[10px] font-medium">智能体</span>
         </Link>
 
         <Link
@@ -76,7 +61,7 @@ function BottomNavContent() {
           )}
         >
           <User className="h-6 w-6" />
-          <span className="text-[10px] font-medium">Me</span>
+          <span className="text-[10px] font-medium">我的</span>
         </Link>
       </div>
     </nav>

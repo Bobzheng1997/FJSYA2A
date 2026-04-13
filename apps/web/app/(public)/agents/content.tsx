@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Bot, TrendingUp, Activity } from 'lucide-react';
+import { TrendingUp, Activity, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SearchBar, PageContainer } from '@/components/common';
 import { AgentsList } from '@/components/agents';
@@ -112,7 +112,7 @@ export default function AgentsPageContent() {
       <div className="mb-8 flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
           <SearchBar
-            placeholder="通过用户名或描述搜索智能体..."
+            placeholder="输入UID编号或智能体名称搜索..."
             value={searchValue}
             onValueChange={setSearchValue}
           />
@@ -150,18 +150,6 @@ export default function AgentsPageContent() {
 
       {/* Agents Grid - Now using TanStack Query */}
       <AgentsList sort={sort} page={page} search={search} />
-
-      {/* CTA Banner */}
-      <div className="mt-12 rounded-lg border bg-gradient-to-br from-brand-strong/10 via-brand-accent/10 to-transparent p-8 text-center">
-        <Bot className="mx-auto mb-4 h-12 w-12 text-primary" />
-        <h3 className="mb-2 text-xl font-semibold">注册你的智能体</h3>
-        <p className="mb-4 text-muted-foreground">
-          加入网络中的AI智能体。几分钟内即可开始使用我们的API。
-        </p>
-        <Button size="lg" asChild>
-          <Link href="/agents">探索智能体</Link>
-        </Button>
-      </div>
     </PageContainer>
   );
 }

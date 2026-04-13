@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getSupabaseServiceClient } from '@agentgram/db';
-import { withAuth, withRateLimit } from '@agentgram/auth';
+import { withAuth, withRateLimit, redis } from '@agentgram/auth';
 import {
   ErrorResponses,
   jsonResponse,
@@ -8,7 +8,16 @@ import {
   PAGINATION,
 } from '@agentgram/shared';
 
-// GET /api/v1/guestbook - Fetch guestbook entries
+// 缓存配置
+const CACHE_TTL_SECONDS = 30; // 缓存 30 秒
+const CACHE_KEY_PREFIX = 'guestbook:list';
+
+// 生成缓存 key
+function getCacheKey(sort: string, page: number, limit: number): string {
+  return `${CACHE_KEY_PREFIX}:${sort}:${page}:${limit}`;
+}
+
+// GET /api/v1/guestbook - Fetch guestbook entries with Redis caching
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -21,6 +30,20 @@ export async function GET(req: NextRequest) {
       PAGINATION.MAX_LIMIT
     );
     const sort = (searchParams.get('sort') || 'new') as 'new' | 'top';
+
+    // 尝试从 Redis 缓存获取
+    if (redis) {
+      try {
+        const cacheKey = getCacheKey(sort, page, limit);
+        const cached = await redis.get(cacheKey);
+        if (cached) {
+          console.log('[Guestbook] Cache hit:', cacheKey);
+          return jsonResponse(createSuccessResponse(cached));
+        }
+      } catch (cacheError) {
+        console.error('[Guestbook] Cache read error:', cacheError);
+      }
+    }
 
     const supabase = getSupabaseServiceClient();
 
@@ -63,23 +86,50 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    return jsonResponse(
-      createSuccessResponse({
-        entries: entries || [],
-        pagination: {
-          page,
-          limit,
-          total: count || 0,
-          totalPages: Math.ceil((count || 0) / limit),
-        },
-      })
-    );
+    const response = {
+      entries: entries || [],
+      pagination: {
+        page,
+        limit,
+        total: count || 0,
+        totalPages: Math.ceil((count || 0) / limit),
+      },
+    };
+
+    // 写入 Redis 缓存
+    if (redis) {
+      try {
+        const cacheKey = getCacheKey(sort, page, limit);
+        await redis.setex(cacheKey, CACHE_TTL_SECONDS, response);
+        console.log('[Guestbook] Cache set:', cacheKey);
+      } catch (cacheError) {
+        console.error('[Guestbook] Cache write error:', cacheError);
+      }
+    }
+
+    return jsonResponse(createSuccessResponse(response));
   } catch (error) {
     console.error('Guestbook GET error:', error);
     return jsonResponse(
       ErrorResponses.internalServerError(),
       500
     );
+  }
+}
+
+// 清除留言板缓存的辅助函数
+async function invalidateGuestbookCache() {
+  if (!redis) return;
+  
+  try {
+    // 删除所有留言板相关的缓存
+    const keys = await redis.keys(`${CACHE_KEY_PREFIX}:*`);
+    if (keys.length > 0) {
+      await redis.del(...keys);
+      console.log('[Guestbook] Cache invalidated, keys:', keys.length);
+    }
+  } catch (error) {
+    console.error('[Guestbook] Cache invalidation error:', error);
   }
 }
 
@@ -134,6 +184,9 @@ async function createGuestbookEntryHandler(req: NextRequest) {
         500
       );
     }
+
+    // 创建成功后清除缓存
+    await invalidateGuestbookCache();
 
     return jsonResponse(
       createSuccessResponse({

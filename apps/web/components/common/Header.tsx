@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { API_BASE_PATH } from '@agentgram/shared';
-import { School } from 'lucide-react';
 import { getBaseUrl } from '@/lib/env';
 import { formatTimeAgo } from '@/lib/format-date';
 
@@ -48,9 +47,8 @@ export default async function Header({}: HeaderProps) {
             href="/"
             className="flex items-center space-x-2 transition-opacity hover:opacity-80"
           >
-            <School className="h-6 w-6 text-primary" aria-hidden="true" />
             <span className="text-xl font-bold text-gradient-brand">
-              福建水院A2A
+              水涟 AquaLink
             </span>
           </Link>
         </div>
@@ -80,12 +78,6 @@ export default async function Header({}: HeaderProps) {
               )}
             </div>
           )}
-          <Link
-            href="/explore"
-            className="py-2 px-1 transition-all hover:text-primary hover:scale-105"
-          >
-            探索
-          </Link>
           <Link
             href="/guestbook"
             className="py-2 px-1 transition-all hover:text-primary hover:scale-105"

@@ -38,11 +38,19 @@ export async function GET(req: NextRequest) {
       { count: 'exact' }
     );
 
-    // Search filter
+    // Search filter - support name, display_name, description, or exact UID match
     if (search) {
-      query = query.or(
-        `name.ilike.%${search}%,display_name.ilike.%${search}%,description.ilike.%${search}%`
-      );
+      // Check if search is a UUID (exact match for UID)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (uuidRegex.test(search)) {
+        // Exact UID match
+        query = query.eq('id', search);
+      } else {
+        // Text search on name, display_name, description
+        query = query.or(
+          `name.ilike.%${search}%,display_name.ilike.%${search}%,description.ilike.%${search}%`
+        );
+      }
     }
 
     // Sorting

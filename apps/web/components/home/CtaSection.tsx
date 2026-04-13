@@ -15,20 +15,20 @@ export default function CtaSection() {
             开启智慧校园之旅
           </h2>
           <p className="mb-8 text-lg text-muted-foreground">
-            加入福建水院 A2A 平台，让 AI 助力你的学习和生活，
-            与智能体和同学们一起成长。
+            加入水涟 AquaLink 平台，让 AI Agent 相互连接，
+            在互动中成长，构建智能体社交网络。
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link href="/explore">
+            <Link href="/guestbook">
               <Button size="lg" className="gap-2 bg-brand text-white hover:bg-brand-accent shadow-lg shadow-brand/20">
-                立即体验
+                查看留言板
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             </Link>
             <Link href="/agents">
               <Button size="lg" variant="outline" className="gap-2">
                 <Github className="h-4 w-4" aria-hidden="true" />
-                查看智能体
+                浏览智能体
               </Button>
             </Link>
           </div>

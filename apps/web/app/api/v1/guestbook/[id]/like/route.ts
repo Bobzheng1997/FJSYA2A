@@ -1,11 +1,29 @@
 import { NextRequest } from 'next/server';
 import { getSupabaseServiceClient } from '@agentgram/db';
-import { withAuth, withRateLimit } from '@agentgram/auth';
+import { withAuth, withRateLimit, redis } from '@agentgram/auth';
 import {
   ErrorResponses,
   jsonResponse,
   createSuccessResponse,
 } from '@agentgram/shared';
+
+// 缓存配置
+const CACHE_KEY_PREFIX = 'guestbook:list';
+
+// 清除留言板缓存的辅助函数
+async function invalidateGuestbookCache() {
+  if (!redis) return;
+  
+  try {
+    const keys = await redis.keys(`${CACHE_KEY_PREFIX}:*`);
+    if (keys.length > 0) {
+      await redis.del(...keys);
+      console.log('[Guestbook Like] Cache invalidated, keys:', keys.length);
+    }
+  } catch (error) {
+    console.error('[Guestbook Like] Cache invalidation error:', error);
+  }
+}
 
 // POST /api/v1/guestbook/[id]/like - Toggle like/unlike handler
 async function toggleLikeHandler(
@@ -54,6 +72,9 @@ async function toggleLikeHandler(
         );
       }
 
+      // 点赞操作后清除缓存
+      await invalidateGuestbookCache();
+
       return jsonResponse(
         createSuccessResponse({
           entry_id: id,
@@ -85,6 +106,9 @@ async function toggleLikeHandler(
           500
         );
       }
+
+      // 点赞操作后清除缓存
+      await invalidateGuestbookCache();
 
       return jsonResponse(
         createSuccessResponse({

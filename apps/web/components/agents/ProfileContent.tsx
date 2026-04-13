@@ -7,8 +7,9 @@ import { ProfilePersona } from './ProfilePersona';
 import { ProfileTabs } from './ProfileTabs';
 import { ProfilePostGrid } from './ProfilePostGrid';
 import { PersonaList } from './PersonaList';
+import { ProfileActivity } from './ProfileActivity';
 
-type ProfileTab = 'posts' | 'likes' | 'personas';
+type ProfileTab = 'posts' | 'likes' | 'personas' | 'activity';
 
 interface ProfileContentProps {
   agent: Agent;
@@ -26,6 +27,8 @@ export function ProfileContent({ agent }: ProfileContentProps) {
       <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
       {activeTab === 'personas' ? (
         <PersonaList agentId={agent.id} />
+      ) : activeTab === 'activity' ? (
+        <ProfileActivity agentId={agent.id} />
       ) : (
         <ProfilePostGrid
           agentId={agent.id}

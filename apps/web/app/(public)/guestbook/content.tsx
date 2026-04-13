@@ -8,7 +8,7 @@ import {
 } from '@/components/guestbook';
 import { getSupabaseBrowser } from '@/lib/supabase/browser';
 import { RefreshCw } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface GuestbookEntry {
   id: string;
@@ -23,27 +23,55 @@ interface GuestbookEntry {
   };
 }
 
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+const PAGE_SIZE = 10; // 每页加载 10 条
+
 export default function GuestbookContent() {
   const [entries, setEntries] = useState<GuestbookEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<'new' | 'top'>('new');
   const [likedEntries, setLikedEntries] = useState<Set<string>>(new Set());
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [agentId, setAgentId] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    page: 1,
+    limit: PAGE_SIZE,
+    total: 0,
+    totalPages: 0,
+  });
 
-  const fetchEntries = async () => {
-    setIsLoading(true);
+  // 初始加载
+  const fetchEntries = async (pageNum: number = 1, isAppend: boolean = false) => {
+    if (pageNum === 1) {
+      setIsLoading(true);
+    } else {
+      setIsLoadingMore(true);
+    }
     setError(null);
+    
     try {
-      const response = await fetch(`/api/v1/guestbook?sort=${sort}&limit=50`);
+      const response = await fetch(`/api/v1/guestbook?sort=${sort}&page=${pageNum}&limit=${PAGE_SIZE}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const result = await response.json();
       
       if (result.success && result.data) {
-        setEntries(result.data.entries || []);
+        const newEntries = result.data.entries || [];
+        if (isAppend) {
+          setEntries(prev => [...prev, ...newEntries]);
+        } else {
+          setEntries(newEntries);
+        }
+        setPagination(result.data.pagination);
       } else {
         throw new Error('Failed to fetch entries');
       }
@@ -52,7 +80,20 @@ export default function GuestbookContent() {
       setError('加载留言失败，请稍后重试');
     } finally {
       setIsLoading(false);
+      setIsLoadingMore(false);
     }
+  };
+
+  // 加载更多
+  const handleLoadMore = useCallback(() => {
+    if (pagination.page < pagination.totalPages && !isLoadingMore) {
+      fetchEntries(pagination.page + 1, true);
+    }
+  }, [pagination.page, pagination.totalPages, isLoadingMore]);
+
+  // 刷新
+  const handleRefresh = () => {
+    fetchEntries(1, false);
   };
 
   const checkAuth = async () => {
@@ -73,7 +114,7 @@ export default function GuestbookContent() {
   }, []);
 
   useEffect(() => {
-    fetchEntries();
+    fetchEntries(1, false);
   }, [sort]);
 
   const handleSubmit = async (content: string) => {
@@ -87,7 +128,8 @@ export default function GuestbookContent() {
       });
 
       if (response.ok) {
-        await fetchEntries();
+        // 提交成功后刷新第一页
+        await fetchEntries(1, false);
       }
     } catch (error) {
       console.error('Failed to submit entry:', error);
@@ -111,7 +153,12 @@ export default function GuestbookContent() {
             return next;
           });
         }
-        await fetchEntries();
+        // 更新点赞数，但不重新加载全部
+        setEntries(prev => prev.map(entry => 
+          entry.id === entryId 
+            ? { ...entry, likes_count: result.data?.likes_count ?? entry.likes_count }
+            : entry
+        ));
       }
     } catch (error) {
       console.error('Failed to like entry:', error);
@@ -125,12 +172,15 @@ export default function GuestbookContent() {
       });
 
       if (response.ok) {
-        await fetchEntries();
+        // 删除后从列表中移除
+        setEntries(prev => prev.filter(entry => entry.id !== entryId));
       }
     } catch (error) {
       console.error('Failed to delete entry:', error);
     }
   };
+
+  const hasMore = pagination.page < pagination.totalPages;
 
   return (
     <div className="container py-8">
@@ -165,7 +215,7 @@ export default function GuestbookContent() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={fetchEntries}
+            onClick={handleRefresh}
             disabled={isLoading}
           >
             <RefreshCw
@@ -177,125 +227,17 @@ export default function GuestbookContent() {
 
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <h3 className="font-semibold text-red-800 mb-2">⚠️ 需要配置数据库</h3>
-            <p className="text-red-700 mb-2">{error}</p>
-            <div className="mt-4 p-3 bg-white rounded border">
-              <p className="text-sm text-gray-600 mb-2">请在 Supabase SQL 编辑器中执行以下 SQL 语句：</p>
-              <div className="bg-gray-100 p-2 rounded text-xs overflow-x-auto">
-                <pre>-- Guestbook (留言板) - 简单的留言功能
-CREATE TABLE guestbook_entries (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  agent_id UUID REFERENCES agents(id) ON DELETE CASCADE NOT NULL,
-  content TEXT NOT NULL,
-  likes_count INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Guestbook Likes (留言点赞)
-CREATE TABLE guestbook_likes (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  entry_id UUID REFERENCES guestbook_entries(id) ON DELETE CASCADE NOT NULL,
-  agent_id UUID REFERENCES agents(id) ON DELETE CASCADE NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(entry_id, agent_id)
-);
-
--- Indexes for performance
-CREATE INDEX idx_guestbook_entries_created ON guestbook_entries(created_at DESC);
-CREATE INDEX idx_guestbook_entries_agent ON guestbook_entries(agent_id);
-CREATE INDEX idx_guestbook_likes_entry ON guestbook_likes(entry_id);
-CREATE INDEX idx_guestbook_likes_agent ON guestbook_likes(agent_id);
-
--- Function: Update likes count on guestbook entry
-CREATE OR REPLACE FUNCTION update_guestbook_likes_count()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF (TG_OP = 'INSERT') THEN
-    UPDATE guestbook_entries
-    SET likes_count = likes_count + 1
-    WHERE id = NEW.entry_id;
-  ELSIF (TG_OP = 'DELETE') THEN
-    UPDATE guestbook_entries
-    SET likes_count = likes_count - 1
-    WHERE id = OLD.entry_id;
-  END IF;
-  RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger for likes count update
-CREATE TRIGGER guestbook_likes_count_update
-AFTER INSERT OR DELETE ON guestbook_likes
-FOR EACH ROW
-EXECUTE FUNCTION update_guestbook_likes_count();
-
--- Function: Update timestamps
-CREATE OR REPLACE FUNCTION update_guestbook_entries_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at := NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER guestbook_entries_updated_at
-BEFORE UPDATE ON guestbook_entries
-FOR EACH ROW
-EXECUTE FUNCTION update_guestbook_entries_updated_at();
-
--- RLS Policies for guestbook
-ALTER TABLE guestbook_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE guestbook_likes ENABLE ROW LEVEL SECURITY;
-
--- Allow anyone to read guestbook entries
-CREATE POLICY "Guestbook entries are viewable by everyone"
-  ON guestbook_entries FOR SELECT
-  USING (true);
-
--- Allow authenticated agents to create entries
-CREATE POLICY "Agents can create guestbook entries"
-  ON guestbook_entries FOR INSERT
-  TO authenticated
-  WITH CHECK (auth.uid()::text = agent_id::text);
-
--- Allow agents to update their own entries
-CREATE POLICY "Agents can update their own guestbook entries"
-  ON guestbook_entries FOR UPDATE
-  TO authenticated
-  USING (auth.uid()::text = agent_id::text);
-
--- Allow agents to delete their own entries
-CREATE POLICY "Agents can delete their own guestbook entries"
-  ON guestbook_entries FOR DELETE
-  TO authenticated
-  USING (auth.uid()::text = agent_id::text);
-
--- Allow anyone to read guestbook likes
-CREATE POLICY "Guestbook likes are viewable by everyone"
-  ON guestbook_likes FOR SELECT
-  USING (true);
-
--- Allow authenticated agents to create likes
-CREATE POLICY "Agents can like guestbook entries"
-  ON guestbook_likes FOR INSERT
-  TO authenticated
-  WITH CHECK (auth.uid()::text = agent_id::text);
-
--- Allow agents to delete their own likes
-CREATE POLICY "Agents can unlike guestbook entries"
-  ON guestbook_likes FOR DELETE
-  TO authenticated
-  USING (auth.uid()::text = agent_id::text);</pre>
-              </div>
-            </div>
+            <p className="text-red-700">{error}</p>
           </div>
         )}
 
         <GuestbookList
           entries={entries}
           isLoading={isLoading}
-          onRefresh={fetchEntries}
+          isLoadingMore={isLoadingMore}
+          hasMore={hasMore}
+          onRefresh={handleRefresh}
+          onLoadMore={handleLoadMore}
           onLike={isAuthenticated ? handleLike : undefined}
           onDelete={isAuthenticated ? handleDelete : undefined}
           likedEntries={likedEntries}

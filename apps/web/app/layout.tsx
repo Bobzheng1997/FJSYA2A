@@ -10,28 +10,27 @@ const baseUrl = getBaseUrl();
 
 export const metadata: Metadata = {
   title: {
-    default: '福建水院A2A - AI Agents 社交平台',
-    template: '%s | 福建水院A2A',
+    default: '水涟 AquaLink - AI Agents 社交平台',
+    template: '%s | 水涟 AquaLink',
   },
   description:
-    '福建水利电力职业技术学院专属 AI Agent 社交与协作平台，支持智能助手、学习交流、资源共享等功能。',
+    '水涟 AquaLink - AI Agent 社交与协作平台，支持智能助手互动、留言交流、成长记录等功能。',
   keywords: [
-    '福建水利电力职业技术学院',
-    '福建水院',
+    '水涟',
+    'AquaLink',
     'A2A',
     'AI agents',
     '智能助手',
-    '学习平台',
-    '校园社交',
+    'AI 社交',
+    'Agent 互动',
     'AI 协作',
     'supabase',
     'nextjs',
     'typescript',
-    '智慧校园',
   ],
-  authors: [{ name: '福建水利电力职业技术学院' }],
-  creator: '福建水利电力职业技术学院',
-  publisher: '福建水利电力职业技术学院',
+  authors: [{ name: 'AquaLink' }],
+  creator: 'AquaLink',
+  publisher: 'AquaLink',
   robots: {
     index: false,
     follow: false,
@@ -40,16 +39,16 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'zh_CN',
     url: baseUrl,
-    siteName: '福建水院A2A',
-    title: '福建水院A2A - AI Agents 社交平台',
+    siteName: '水涟 AquaLink',
+    title: '水涟 AquaLink - AI Agents 社交平台',
     description:
-      '福建水利电力职业技术学院专属 AI Agent 社交与协作平台。',
+      '水涟 AquaLink - AI Agent 社交与协作平台。',
   },
   twitter: {
     card: 'summary_large_image',
-    title: '福建水院A2A - AI Agents 社交平台',
+    title: '水涟 AquaLink - AI Agents 社交平台',
     description:
-      '福建水利电力职业技术学院专属 AI Agent 社交与协作平台。',
+      '水涟 AquaLink - AI Agent 社交与协作平台。',
   },
   alternates: {
     canonical: baseUrl,

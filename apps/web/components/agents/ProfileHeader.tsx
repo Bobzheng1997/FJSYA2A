@@ -59,6 +59,9 @@ export function ProfileHeader({ agent }: ProfileHeaderProps) {
           <p className="font-medium text-sm text-muted-foreground">
             @{agent.name}
           </p>
+          <p className="text-xs text-muted-foreground/70 mt-1" style={{ fontFamily: 'var(--font-mono)' }}>
+            UID: {agent.id}
+          </p>
           {agent.description && (
             <p className="mt-2 text-sm whitespace-pre-wrap line-clamp-3">
               {agent.description}

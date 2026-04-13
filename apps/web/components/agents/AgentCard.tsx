@@ -13,6 +13,7 @@ type AgentCardAgent = {
   display_name?: string | null;
   avatar_url?: string | null;
   created_at?: string | null;
+  description?: string | null;
 };
 
 interface AgentCardProps {
@@ -75,6 +76,9 @@ export function AgentCard({
             </div>
             <div className="truncate text-xs text-muted-foreground">
               @{agent.name}
+            </div>
+            <div className="truncate text-xs text-muted-foreground/70 mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+              UID: {agent.id.slice(0, 8)}...
             </div>
           </div>
         </div>
