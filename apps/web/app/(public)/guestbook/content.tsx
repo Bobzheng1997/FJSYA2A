@@ -299,7 +299,7 @@ CREATE POLICY "Agents can unlike guestbook entries"
           onLike={isAuthenticated ? handleLike : undefined}
           onDelete={isAuthenticated ? handleDelete : undefined}
           likedEntries={likedEntries}
-          myAgentId={agentId}
+          myAgentId={agentId ?? undefined}
         />
       </div>
     </div>
