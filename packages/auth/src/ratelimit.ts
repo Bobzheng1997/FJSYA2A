@@ -7,13 +7,15 @@ import {
   API_KEY_PREFIX_LENGTH,
 } from '@agentgram/shared';
 import { Ratelimit, type Duration } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
+import { Redis as UpstashRedis } from '@upstash/redis';
+import { Redis as IORedis } from 'ioredis';
 
 /**
  * Rate limiting middleware for API routes
  *
  * Uses Upstash Redis when configured and falls back to in-memory storage
  * in development environments where Upstash is not configured.
+ * Also supports local Redis via ioredis.
  */
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -77,20 +79,48 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitOptions> = {
 
 const upstashUrl = process.env.UPSTASH_REDIS_REST_URL?.trim();
 const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
+const localRedisUrl = process.env.REDIS_URL?.trim();
 
-export const redis =
-  upstashUrl && upstashToken
-    ? new Redis({
-        url: upstashUrl,
-        token: upstashToken,
-      })
-    : null;
+// 支持 Upstash Redis 或本地 Redis
+let redis: UpstashRedis | IORedis | null = null;
+let redisType: 'upstash' | 'local' | 'none' = 'none';
+
+if (upstashUrl && upstashToken) {
+  // 使用 Upstash Redis
+  redis = new UpstashRedis({
+    url: upstashUrl,
+    token: upstashToken,
+  });
+  redisType = 'upstash';
+  console.log('[agentgram:ratelimit] Using Upstash Redis');
+} else if (localRedisUrl) {
+  // 使用本地 Redis
+  try {
+    redis = new IORedis(localRedisUrl, {
+      retryStrategy: (times) => {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      },
+      maxRetriesPerRequest: 3,
+    });
+    redisType = 'local';
+    console.log('[agentgram:ratelimit] Using local Redis');
+    
+    // 监听连接错误
+    redis.on('error', (err) => {
+      console.error('[agentgram:ratelimit] Local Redis error:', err);
+    });
+  } catch (error) {
+    console.error('[agentgram:ratelimit] Failed to connect to local Redis:', error);
+    redis = null;
+  }
+}
 
 if (!redis && process.env.NODE_ENV === 'production') {
   console.error(
-    '[agentgram:ratelimit] Upstash Redis not configured in production. ' +
+    '[agentgram:ratelimit] Redis not configured in production. ' +
       'Mutation endpoints will reject requests (fail-closed). ' +
-      'Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.'
+      'Set UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN or REDIS_URL.'
   );
 }
 
@@ -121,7 +151,7 @@ const createSlidingWindow: SlidingWindowFactory = (tokens, window) =>
   ).slidingWindow(tokens, window);
 
 function getLimiter(options: RateLimitOptions) {
-  if (!redis) {
+  if (!redis || redisType !== 'upstash') {
     return null;
   }
 
@@ -133,7 +163,7 @@ function getLimiter(options: RateLimitOptions) {
 
   const window = toDuration(options.windowMs);
   const limiter = new Ratelimit({
-    redis,
+    redis: redis as UpstashRedis,
     limiter: createSlidingWindow(
       options.maxRequests as unknown as Duration,
       window
@@ -266,6 +296,47 @@ function toDuration(windowMs: number): Duration {
   return `${Math.ceil(windowMs / secondMs)} s` as Duration;
 }
 
+// 本地 Redis 限流实现
+async function checkLocalRedisLimit(
+  redisClient: IORedis,
+  key: string,
+  maxRequests: number,
+  windowMs: number
+): Promise<{ success: boolean; limit: number; remaining: number; reset: number }> {
+  const now = Date.now();
+  const windowSeconds = Math.ceil(windowMs / 1000);
+  
+  try {
+    // 使用 Redis 的 sorted set 实现滑动窗口
+    const pipeline = redisClient.pipeline();
+    
+    // 移除窗口外的旧记录
+    pipeline.zremrangebyscore(key, 0, now - windowMs);
+    
+    // 获取当前窗口内的请求数
+    pipeline.zcard(key);
+    
+    // 添加当前请求
+    pipeline.zadd(key, now, `${now}-${Math.random()}`);
+    
+    // 设置过期时间
+    pipeline.expire(key, windowSeconds);
+    
+    const results = await pipeline.exec();
+    const currentCount = (results?.[1]?.[1] as number) || 0;
+    
+    const success = currentCount < maxRequests;
+    const remaining = Math.max(0, maxRequests - currentCount - 1);
+    const reset = Math.ceil((now + windowMs) / 1000);
+    
+    return { success, limit: maxRequests, remaining, reset };
+  } catch (error) {
+    console.error('[agentgram:ratelimit] Local Redis limit check failed:', error);
+    // 失败时允许请求通过（fail-open）
+    return { success: true, limit: maxRequests, remaining: 0, reset: Math.ceil((now + windowMs) / 1000) };
+  }
+}
+
 /**
  * Rate limiting middleware wrapper
  * @param limitType - Predefined limit type or custom options
@@ -297,7 +368,7 @@ export function withRateLimit<T extends unknown[]>(
 
     // Fail-closed: reject mutation endpoints when Redis is unavailable in production
     if (
-      !limiter &&
+      !redis &&
       process.env.NODE_ENV === 'production' &&
       FAIL_CLOSED_TYPES.has(typeName)
     ) {
@@ -321,7 +392,8 @@ export function withRateLimit<T extends unknown[]>(
       );
     }
 
-    if (limiter) {
+    // Upstash Redis 限流
+    if (limiter && redisType === 'upstash') {
       const result = await limiter.limit(key);
       const resetSeconds = toUnixSeconds(result.reset);
       const rateLimitHeaders = buildRateLimitHeaders(
@@ -381,6 +453,70 @@ export function withRateLimit<T extends unknown[]>(
       return withRateLimitHeaders(response, rateLimitHeaders);
     }
 
+    // 本地 Redis 限流
+    if (redis && redisType === 'local') {
+      const redisClient = redis as IORedis;
+      const result = await checkLocalRedisLimit(redisClient, key, maxRequests, windowMs);
+      const resetSeconds = result.reset;
+      const rateLimitHeaders = buildRateLimitHeaders(
+        result.limit,
+        result.remaining,
+        resetSeconds
+      );
+      
+      if (!result.success) {
+        const retryAfterSeconds = getRetryAfterSeconds(resetSeconds);
+        return new Response(JSON.stringify({
+            success: false,
+            error: {
+              code: 'RATE_LIMIT_EXCEEDED',
+              message: 'Rate limit exceeded. Please try again later.',
+            },
+          } satisfies ApiResponse), {
+            status: 429,
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8',
+              ...rateLimitHeaders,
+              'Retry-After': retryAfterSeconds.toString(),
+            },
+          }
+        );
+      }
+
+      if (keyPrefixKey) {
+        const prefixResult = await checkLocalRedisLimit(redisClient, keyPrefixKey, maxRequests, windowMs);
+        const prefixResetSeconds = prefixResult.reset;
+        const prefixHeaders = buildRateLimitHeaders(
+          prefixResult.limit,
+          prefixResult.remaining,
+          prefixResetSeconds
+        );
+
+        if (!prefixResult.success) {
+          const retryAfterSeconds = getRetryAfterSeconds(prefixResetSeconds);
+          return new Response(JSON.stringify({
+              success: false,
+              error: {
+                code: 'RATE_LIMIT_EXCEEDED',
+                message: 'Rate limit exceeded. Please try again later.',
+              },
+            } satisfies ApiResponse), {
+              status: 429,
+              headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                ...prefixHeaders,
+                'Retry-After': retryAfterSeconds.toString(),
+              },
+            }
+          );
+        }
+      }
+
+      const response = await handler(req, ...args);
+      return withRateLimitHeaders(response, rateLimitHeaders);
+    }
+
+    // 内存限流（fallback）
     const now = Date.now();
     const limitData = getLimitData(key, now, windowMs);
     limitData.count++;
@@ -447,3 +583,6 @@ export function withRateLimit<T extends unknown[]>(
     return withRateLimitHeaders(response, rateLimitHeaders);
   };
 }
+
+// 导出 redis 实例供其他模块使用
+export { redis };

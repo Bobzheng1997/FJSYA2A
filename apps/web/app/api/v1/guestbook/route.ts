@@ -7,6 +7,7 @@ import {
   createSuccessResponse,
   PAGINATION,
 } from '@agentgram/shared';
+import { Redis as IORedis } from 'ioredis';
 
 // 缓存配置
 const CACHE_TTL_SECONDS = 30; // 缓存 30 秒
@@ -15,6 +16,11 @@ const CACHE_KEY_PREFIX = 'guestbook:list';
 // 生成缓存 key
 function getCacheKey(sort: string, page: number, limit: number): string {
   return `${CACHE_KEY_PREFIX}:${sort}:${page}:${limit}`;
+}
+
+// 检查是否是 ioredis 实例
+function isIORedis(client: any): client is IORedis {
+  return client && typeof client.get === 'function' && 'options' in client;
 }
 
 // GET /api/v1/guestbook - Fetch guestbook entries with Redis caching
@@ -35,7 +41,17 @@ export async function GET(req: NextRequest) {
     if (redis) {
       try {
         const cacheKey = getCacheKey(sort, page, limit);
-        const cached = await redis.get(cacheKey);
+        let cached: any;
+        
+        if (isIORedis(redis)) {
+          // ioredis
+          const cachedStr = await redis.get(cacheKey);
+          cached = cachedStr ? JSON.parse(cachedStr) : null;
+        } else {
+          // Upstash Redis
+          cached = await redis.get(cacheKey);
+        }
+        
         if (cached) {
           console.log('[Guestbook] Cache hit:', cacheKey);
           return jsonResponse(createSuccessResponse(cached));
@@ -100,7 +116,15 @@ export async function GET(req: NextRequest) {
     if (redis) {
       try {
         const cacheKey = getCacheKey(sort, page, limit);
-        await redis.setex(cacheKey, CACHE_TTL_SECONDS, response);
+        
+        if (isIORedis(redis)) {
+          // ioredis
+          await redis.setex(cacheKey, CACHE_TTL_SECONDS, JSON.stringify(response));
+        } else {
+          // Upstash Redis
+          await redis.setex(cacheKey, CACHE_TTL_SECONDS, response);
+        }
+        
         console.log('[Guestbook] Cache set:', cacheKey);
       } catch (cacheError) {
         console.error('[Guestbook] Cache write error:', cacheError);
@@ -122,11 +146,34 @@ async function invalidateGuestbookCache() {
   if (!redis) return;
   
   try {
-    // 删除所有留言板相关的缓存
-    const keys = await redis.keys(`${CACHE_KEY_PREFIX}:*`);
-    if (keys.length > 0) {
-      await redis.del(...keys);
-      console.log('[Guestbook] Cache invalidated, keys:', keys.length);
+    if (isIORedis(redis)) {
+      // ioredis - 使用 scan 和 del
+      const stream = redis.scanStream({
+        match: `${CACHE_KEY_PREFIX}:*`,
+        count: 100,
+      });
+      
+      const keys: string[] = [];
+      stream.on('data', (resultKeys: string[]) => {
+        keys.push(...resultKeys);
+      });
+      
+      await new Promise((resolve, reject) => {
+        stream.on('end', resolve);
+        stream.on('error', reject);
+      });
+      
+      if (keys.length > 0) {
+        await redis.del(...keys);
+        console.log('[Guestbook] Cache invalidated, keys:', keys.length);
+      }
+    } else {
+      // Upstash Redis
+      const keys = await redis.keys(`${CACHE_KEY_PREFIX}:*`);
+      if (keys.length > 0) {
+        await redis.del(...keys);
+        console.log('[Guestbook] Cache invalidated, keys:', keys.length);
+      }
     }
   } catch (error) {
     console.error('[Guestbook] Cache invalidation error:', error);
