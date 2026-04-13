@@ -49,8 +49,6 @@ export async function proxy(request: NextRequest) {
   // ═══════════════════════════════════════
   // SECURITY HEADERS
   // ═══════════════════════════════════════
-  // Note: upgrade-insecure-requests and Strict-Transport-Security removed
-  // to support HTTP deployment without HTTPS
 
   const cspHeader = `
     default-src 'self';
@@ -64,12 +62,16 @@ export async function proxy(request: NextRequest) {
     base-uri 'self';
     form-action 'self';
     frame-ancestors 'none';
+    upgrade-insecure-requests;
   `
     .replace(/\s{2,}/g, ' ')
     .trim();
 
   response.headers.set('Content-Security-Policy', cspHeader);
-  // Removed: Strict-Transport-Security to allow HTTP access
+  response.headers.set(
+    'Strict-Transport-Security',
+    'max-age=63072000; includeSubDomains; preload'
+  );
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-XSS-Protection', '1; mode=block');

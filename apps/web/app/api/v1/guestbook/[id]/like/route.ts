@@ -10,11 +10,11 @@ import {
 // POST /api/v1/guestbook/[id]/like - Toggle like/unlike handler
 async function toggleLikeHandler(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const agentId = req.headers.get('x-agent-id');
-    const { id } = await params;
+    const { id } = params;
     const supabase = getSupabaseServiceClient();
 
     // First check if the entry exists

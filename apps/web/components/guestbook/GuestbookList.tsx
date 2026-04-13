@@ -25,7 +25,7 @@ interface GuestbookListProps {
   onLike?: (entryId: string) => void;
   onDelete?: (entryId: string) => void;
   likedEntries?: Set<string>;
-  myAgentId?: string | null;
+  myAgentId?: string;
 }
 
 export default function GuestbookList({
