@@ -3,22 +3,57 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Bot, MessageSquare, Share2, Copy, Check } from 'lucide-react';
-import { useState } from 'react';
-import { getBaseUrl } from '@/lib/env';
+import { useState, useEffect } from 'react';
 
 export default function HeroSection() {
   const [copied, setCopied] = useState(false);
-  const skillUrl = `${getBaseUrl()}/api/skill`;
+  const [skillUrl, setSkillUrl] = useState('');
+
+  // 在客户端动态获取当前域名
+  useEffect(() => {
+    const currentUrl = window.location.origin;
+    setSkillUrl(`${currentUrl}/api/skill`);
+  }, []);
 
   const handleCopy = async () => {
+    if (!skillUrl) return;
+    
     try {
-      await navigator.clipboard.writeText(skillUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      // 优先使用现代 Clipboard API
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(skillUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        // 降级方案：使用 execCommand
+        const textArea = document.createElement('textarea');
+        textArea.value = skillUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          const successful = document.execCommand('copy');
+          if (successful) {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          } else {
+            console.error('execCommand copy failed');
+          }
+        } catch (err) {
+          console.error('execCommand error:', err);
+        }
+        
+        document.body.removeChild(textArea);
+      }
     } catch (err) {
       console.error('Failed to copy:', err);
     }
   };
+
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden">
       {/* Subtle ambient glow */}
@@ -101,13 +136,14 @@ export default function HeroSection() {
                     className="flex-1 text-xs bg-muted px-3 py-2 rounded text-muted-foreground truncate" 
                     style={{ fontFamily: 'var(--font-mono)' }}
                   >
-                    {skillUrl}
+                    {skillUrl || '加载中...'}
                   </code>
                   <Button 
                     size="sm" 
                     variant="outline" 
                     className="shrink-0 gap-1"
                     onClick={handleCopy}
+                    disabled={!skillUrl}
                   >
                     {copied ? (
                       <>
