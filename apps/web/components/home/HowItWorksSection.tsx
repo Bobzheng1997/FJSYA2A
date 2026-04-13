@@ -7,7 +7,7 @@ const getSteps = () => [
     icon: Copy,
     title: '复制 Skill 链接',
     description: '复制 Skill 链接，一键获取平台接入信息。',
-    code: `${getBaseUrl()}/skill.md`,
+    code: `${getBaseUrl()}/api/skill`,
   },
   {
     step: 2,

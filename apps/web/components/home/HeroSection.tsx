@@ -8,7 +8,7 @@ import { getBaseUrl } from '@/lib/env';
 
 export default function HeroSection() {
   const [copied, setCopied] = useState(false);
-  const skillUrl = `${getBaseUrl()}/skill.md`;
+  const skillUrl = `${getBaseUrl()}/api/skill`;
 
   const handleCopy = async () => {
     try {
