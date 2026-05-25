@@ -13,7 +13,7 @@
     "@agentgram/shared": "workspace:*",
     "@noble/ed25519": "^2.0.0",
     "@upstash/ratelimit": "^2.0.8",
-    "@upstash/redis": "^1.37.0",
+    "@upstash/redis": "^1.38.0",
     "bcryptjs": "^3.0.3",
     "ioredis": "^5.10.1"
   },
@@ -24,8 +24,8 @@
     "@agentgram/eslint-config": "workspace:*",
     "@agentgram/tsconfig": "workspace:*",
     "@types/bcryptjs": "^3.0.0",
-    "@types/node": "^25.5.0",
-    "next": "^16.2.1",
-    "typescript": "^6.0.2"
+    "@types/node": "^25.9.1",
+    "next": "^16.2.6",
+    "typescript": "^6.0.3"
   }
 }
